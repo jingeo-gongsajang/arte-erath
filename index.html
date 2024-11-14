@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>개병신</title>
+    <title>Three.js 3D 모델 불러오기</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -45,7 +45,7 @@
         const loader = new GLTFLoader();
 
         let earth, sea;
-        let rotateModels = false; // 회전 여부를 나타내는 변수
+        let rotateSpeed = 0.02; // 회전 속도
 
         // 첫 번째 모델(earth.glb) 로드
         loader.load('models/earth.glb', function (gltf) {
@@ -67,19 +67,29 @@
             console.error(error);
         });
 
-        // 클릭 이벤트를 통한 회전 토글 기능
-        window.addEventListener('click', () => {
-            rotateModels = !rotateModels;  // 회전 상태를 토글
+        // 마우스의 움직임에 따라 모델 회전
+        let mouseX = 0, mouseY = 0;
+
+        // 마우스 이동 이벤트 처리
+        window.addEventListener('mousemove', (event) => {
+            // 마우스 좌표를 화면 크기에 비례하게 계산
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1; // -1 ~ 1 범위로 변환
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1; // -1 ~ 1 범위로 변환
         });
 
         // 애니메이션 및 렌더링 루프
         function animate() {
             requestAnimationFrame(animate);
 
-            // 모델 회전 애니메이션 (회전 상태가 true일 때만 회전)
-            if (rotateModels) {
-                if (earth) earth.rotation.y += 0.01;
-                if (sea) sea.rotation.y += 0.01;
+            // 마우스 움직임에 따른 회전 (모델들이 마우스에 따라 회전)
+            if (earth) {
+                earth.rotation.y += mouseX * rotateSpeed; // X축 마우스 움직임에 따라 Y축 회전
+                earth.rotation.x += mouseY * rotateSpeed; // Y축 마우스 움직임에 따라 X축 회전
+            }
+
+            if (sea) {
+                sea.rotation.y += mouseX * rotateSpeed; // X축 마우스 움직임에 따라 Y축 회전
+                sea.rotation.x += mouseY * rotateSpeed; // Y축 마우스 움직임에 따라 X축 회전
             }
 
             renderer.render(scene, camera);
