@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js 3D 모델 불러오기</title>
+    <title>개병신</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -44,10 +44,13 @@
         // GLTF 로더
         const loader = new GLTFLoader();
 
+        let earth, sea;
+        let rotateModels = false; // 회전 여부를 나타내는 변수
+
         // 첫 번째 모델(earth.glb) 로드
-        loader.load('./models/earth.glb', function (gltf) {
-            const earth = gltf.scene;
-            earth.scale.set(1, 1, 1); // 크기 조정
+        loader.load('models/earth.glb', function (gltf) {
+            earth = gltf.scene;
+            earth.scale.set(0.5, 0.5, 0.5); // 크기 조정
             earth.position.set(0, 0, 0); // 위치 조정
             scene.add(earth);
         }, undefined, function (error) {
@@ -55,25 +58,29 @@
         });
 
         // 두 번째 모델(sea.glb) 로드
-        loader.load('./models/sea.glb', function (gltf) {
-            const sea = gltf.scene;
-            sea.scale.set(1, 1, 1); // 크기 조정
+        loader.load('models/sea.glb', function (gltf) {
+            sea = gltf.scene;
+            sea.scale.set(0.5, 0.5, 0.5); // 크기 조정
             sea.position.set(2, 0, 0); // 위치 조정
             scene.add(sea);
         }, undefined, function (error) {
             console.error(error);
         });
 
+        // 클릭 이벤트를 통한 회전 토글 기능
+        window.addEventListener('click', () => {
+            rotateModels = !rotateModels;  // 회전 상태를 토글
+        });
+
         // 애니메이션 및 렌더링 루프
         function animate() {
             requestAnimationFrame(animate);
 
-            // 모델 회전 애니메이션 (옵션)
-            scene.traverse(function (child) {
-                if (child instanceof THREE.Mesh) {
-                    child.rotation.y += 0.01;
-                }
-            });
+            // 모델 회전 애니메이션 (회전 상태가 true일 때만 회전)
+            if (rotateModels) {
+                if (earth) earth.rotation.y += 0.005;
+                if (sea) sea.rotation.y += 0.005;
+            }
 
             renderer.render(scene, camera);
         }
