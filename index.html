@@ -22,7 +22,7 @@
     <script type="module">
         // three.js 모듈 임포트
         import * as THREE from 'three';
-        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
         // 씬, 카메라, 렌더러 설정
         const scene = new THREE.Scene();
@@ -32,7 +32,7 @@
         document.body.appendChild(renderer.domElement);
 
         // 카메라 위치 설정 (모델들과의 거리를 3배로 설정)
-        camera.position.z = 15;  // z 값을 3배로 늘림 (원래 5에서 15로 변경)
+        camera.position.z = 15;
 
         // 조명 추가
         const light = new THREE.AmbientLight(0x404040); // 부드러운 배경광
@@ -46,12 +46,14 @@
 
         let earth, sea;
         let rotateSpeed = 0.02; // 회전 속도
+        let isMouseDown = false; // 마우스 클릭 상태 추적
+        let mouseX = 0, mouseY = 0;
 
         // 첫 번째 모델(earth.glb) 로드
         loader.load('models/earth.glb', function (gltf) {
             earth = gltf.scene;
             earth.scale.set(0.5, 0.5, 0.5); // 크기를 반으로 줄임
-            earth.position.set(0, 0, 0); // 원래 위치 그대로
+            earth.position.set(0, 0, 0); // 동일한 위치에 배치
             scene.add(earth);
         }, undefined, function (error) {
             console.error(error);
@@ -60,38 +62,45 @@
         // 두 번째 모델(sea.glb) 로드
         loader.load('models/sea.glb', function (gltf) {
             sea = gltf.scene;
-            sea.scale.set(0.5, 0.5, 0.5); // 크기를 반으로 줄임
-            sea.position.set(6, 0, 0); // 첫 번째 모델에서 3배 더 멀리 배치 (x=6)
+            sea.scale.set(0.45, 0.45, 0.45); // 첫 번째 모델의 0.9배 크기로 설정
+            sea.position.set(0, 0, 0); // 첫 번째 모델과 동일한 위치에 배치
             scene.add(sea);
         }, undefined, function (error) {
             console.error(error);
         });
 
-        // 마우스의 움직임에 따라 모델 회전
-        let mouseX = 0, mouseY = 0;
+        // 마우스 클릭 상태 변경 (mousedown, mouseup)
+        window.addEventListener('mousedown', () => {
+            isMouseDown = true;  // 마우스 클릭 상태
+        });
+
+        window.addEventListener('mouseup', () => {
+            isMouseDown = false; // 마우스 클릭 상태 해제
+        });
 
         // 마우스 이동 이벤트 처리
         window.addEventListener('mousemove', (event) => {
-            // 마우스 좌표를 화면 크기에 비례하게 계산
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1; // -1 ~ 1 범위로 변환
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1; // -1 ~ 1 범위로 변환
+            if (isMouseDown) {
+                // 마우스 좌표를 화면 크기에 비례하게 계산
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1; // -1 ~ 1 범위로 변환
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1; // -1 ~ 1 범위로 변환
+
+                // 마우스 움직임에 따른 회전 (모델들이 마우스에 따라 회전)
+                if (earth) {
+                    earth.rotation.y += mouseX * rotateSpeed; // X축 마우스 움직임에 따라 Y축 회전
+                    earth.rotation.x += mouseY * rotateSpeed; // Y축 마우스 움직임에 따라 X축 회전
+                }
+
+                if (sea) {
+                    sea.rotation.y += mouseX * rotateSpeed; // X축 마우스 움직임에 따라 Y축 회전
+                    sea.rotation.x += mouseY * rotateSpeed; // Y축 마우스 움직임에 따라 X축 회전
+                }
+            }
         });
 
         // 애니메이션 및 렌더링 루프
         function animate() {
             requestAnimationFrame(animate);
-
-            // 마우스 움직임에 따른 회전 (모델들이 마우스에 따라 회전)
-            if (earth) {
-                earth.rotation.y += mouseX * rotateSpeed; // X축 마우스 움직임에 따라 Y축 회전
-                earth.rotation.x += mouseY * rotateSpeed; // Y축 마우스 움직임에 따라 X축 회전
-            }
-
-            if (sea) {
-                sea.rotation.y += mouseX * rotateSpeed; // X축 마우스 움직임에 따라 Y축 회전
-                sea.rotation.x += mouseY * rotateSpeed; // Y축 마우스 움직임에 따라 X축 회전
-            }
-
             renderer.render(scene, camera);
         }
 
@@ -106,4 +115,3 @@
     </script>
 </body>
 </html>
-
