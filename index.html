@@ -52,6 +52,11 @@
             earth = gltf.scene;
             earth.scale.set(0.5, 0.5, 0.5); // 크기를 반으로 줄임
             earth.position.set(0, 0, 0); // 동일한 위치에 배치
+            // 모델의 회전 중심을 중앙으로 설정
+            earth.geometry.computeBoundingBox(); // 모델의 Bounding Box를 계산
+            const center = new THREE.Vector3();
+            earth.geometry.boundingBox.getCenter(center); // 중앙 계산
+            earth.position.sub(center); // 모델의 위치를 중앙을 기준으로 설정
             scene.add(earth);
         }, undefined, function (error) {
             console.error(error);
@@ -60,8 +65,13 @@
         // 두 번째 모델(sea.glb) 로드
         loader.load('models/sea.glb', function (gltf) {
             sea = gltf.scene;
-            sea.scale.set(0.6, 0.6, 0.6); // 첫 번째 모델과 동일한 크기
+            sea.scale.set(0.5, 0.5, 0.5); // 첫 번째 모델과 동일한 크기
             sea.position.set(0, 0, 0); // 첫 번째 모델과 동일한 위치에 배치
+            // 모델의 회전 중심을 중앙으로 설정
+            sea.geometry.computeBoundingBox(); // 모델의 Bounding Box를 계산
+            const center = new THREE.Vector3();
+            sea.geometry.boundingBox.getCenter(center); // 중앙 계산
+            sea.position.sub(center); // 모델의 위치를 중앙을 기준으로 설정
             scene.add(sea);
         }, undefined, function (error) {
             console.error(error);
@@ -71,7 +81,7 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            // 자동으로 모델 회전 (마우스와 상관없이)
+            // 자동으로 모델 회전 (자신의 중앙을 기준으로 회전)
             if (earth) {
                 earth.rotation.y += rotateSpeed; // Y축으로 회전
             }
