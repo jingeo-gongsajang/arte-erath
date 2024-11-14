@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>개병신</title>
+    <title>Three.js 3D 모델 불러오기</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -22,7 +22,7 @@
     <script type="module">
         // three.js 모듈 임포트
         import * as THREE from 'three';
-        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
         // 씬, 카메라, 렌더러 설정
         const scene = new THREE.Scene();
@@ -31,8 +31,8 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // 카메라 위치 설정
-        camera.position.z = 5;
+        // 카메라 위치 설정 (모델들과의 거리를 3배로 설정)
+        camera.position.z = 15;  // z 값을 3배로 늘림 (원래 5에서 15로 변경)
 
         // 조명 추가
         const light = new THREE.AmbientLight(0x404040); // 부드러운 배경광
@@ -96,3 +96,4 @@
     </script>
 </body>
 </html>
+
