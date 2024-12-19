@@ -55,147 +55,94 @@
       // --- 초기 세팅 ---
 
       // 📕Engine.create() 함수를 사용하여 Matter.js 엔진을 생성한다.
-      const engine = Engine.create( { gravity: { y : 0.01} } );
-      // 📕렌더링할 컨테이너 역할 부분의 id를 가져온다.(getElementById)
+      const engine = Engine.create({ gravity: { y: 0.01 } });
       const container = document.getElementById("container");
 
       // 📕Matter.Render.create() 함수를 사용하여 시각적인 렌더링을 담당하는 객체를 생성한다.
       const renderer = Matter.Render.create({
-        element: container, // 렌더러가 그릴 HTML요소를 지정해준다.
-        engine: engine, // 렌더러에 사용될 Matter.js 엔진을 지정해준다.
+        element: container,
+        engine: engine,
         options: {
-          // 커스텀 옵션들을 설정해준다.
           width: container.offsetWidth,
           height: container.offsetHeight,
-          wireframes: false, //wireframe 여부
+          wireframes: false,
           background: "#29cfb9",
         },
       });
 
       // 📕경계 벽 생성하는 부분 (순서대로 왼쪽, 오른쪽, 아래, 위쪽 벽)
       const walls = [
-        Bodies.rectangle(0, 0, 1, container.offsetHeight * 2, {
-          isStatic: true,
-        }),
-        Bodies.rectangle(
-          container.offsetWidth,
-          0,
-          1,
-          container.offsetHeight * 2,
-          { isStatic: true }
-        ),
-        Bodies.rectangle(
-          0,
-          container.offsetHeight,
-          container.offsetWidth * 2,
-          1,
-          { isStatic: true }
-        ),
-        // 상단 벽 추가
-        Bodies.rectangle(
-          container.offsetWidth / 2,
-          0,
-          container.offsetWidth * 2,
-          1,
-          { isStatic: true }
-        ),
+        Bodies.rectangle(0, 0, 1, container.offsetHeight * 2, { isStatic: true }),
+        Bodies.rectangle(container.offsetWidth, 0, 1, container.offsetHeight * 2, { isStatic: true }),
+        Bodies.rectangle(0, container.offsetHeight, container.offsetWidth * 2, 1, { isStatic: true }),
+        Bodies.rectangle(container.offsetWidth / 2, 0, container.offsetWidth * 2, 1, { isStatic: true }),
       ];
 
       // 📕물리적 특성을 설정하는 객체인 physics를 정의한다.
       const physics = {
-        restitution: 0.7, // 복원력 또는 탄성력 (0~1 사이에 지정해줌. 1에 가까워질 수록 충돌 후 빠르게 원래 형태로 돌아간다.)
-        friction: 0.7, // 마찰 계수 (0~1 사이에 지정해줌. 1에 가까워질 수록 강한 마찰이 발생한다.)
+        restitution: 0.7, // 복원력
+        friction: 0.7, // 마찰 계수
       };
 
-      // 도넛모양 생성하는 부분인 듯!
-      const createCircle = (width, color, x, y) => {
-        const outerCircle = Bodies.circle(x, y, width, {
+      // trash_images 폴더에 있는 이미지 목록 (이미지는 상대 경로로 작성)
+      const trashImages = [];
+      for (let i = 1; i <= 12; i++) {
+        trashImages.push(`trash_images/쓰레기${i}.png`);
+      }
+
+      // 점 형태로 변환된 작은 원 생성
+      const createDot = (sizePercentage, color, x, y) => {
+        const size = Math.min(container.offsetWidth, container.offsetHeight) * (sizePercentage / 100);
+        const dot = Bodies.circle(x, y, size, {
           ...physics,
           render: {
             fillStyle: color,
-          },
-        });
-        const innerCircle = Bodies.circle(x, y, width / 2.5, {
-          ...physics,
-          render: {
-            fillStyle: "#eee7e0",
-          },
-        });
-
-        return Body.create({
-          parts: [outerCircle, innerCircle],
-        });
-      };
-
-      // 소세지모양 생성하는 부분인듯!
-      const createSvgElement = (path, color, scale, x, y, angle) => {
-        pathElement = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "path"
-        );
-        pathElement.setAttribute("d", path);
-        const vertices = Svg.pathToVertices(pathElement, 3);
-        vertices.forEach((vertical) => {
-          const i = vertices.findIndex(
-            (v) => v.x === vertical.x && v.y === vertical.y
-          );
-
-          if (i !== -1) {
-            vertices.splice(i, 1);
-          }
-        });
-        const body = Bodies.fromVertices(
-          x,
-          y,
-          vertices,
-          {
-            ...physics,
-            render: {
-              fillStyle: color,
-              strokeStyle: color,
-              lineWidth: "1px",
+            sprite: {
+              texture: getRandomTrashImage(),
+              xScale: size / 100, // 이미지 크기 조정 (적절한 크기로 맞추기 위해 조정)
+              yScale: size / 100, // 이미지 크기 조정 (적절한 크기로 맞추기 위해 조정)
             },
           },
-          true
-        );
-
-        Body.scale(body, 1, 1);
-        Body.setAngle(body, angle);
-
-        return body;
+        });
+        return dot;
       };
 
-      // 모양 생성하는 함수를 바탕으로 요소들을 생성해주는 부분인듯
+      // 랜덤한 이미지 URL을 선택하는 함수
+      const getRandomTrashImage = () => {
+        const randomIndex = Math.floor(Math.random() * trashImages.length);
+        return trashImages[randomIndex];
+      };
+
+      // 물리적 요소들 (점들) 생성
       const elements = [
-        createSvgElement(curved, "#583d91", 1, 250, 200, 30),
-        createSvgElement(reactangle, "#eb5c48", 1, 450, 200, 50),
-        createCircle(115, "#9a3d90", 500, 200),
-        createSvgElement(curved, "#583d91", 1, 700, 200, 50),
-        createCircle(135, "#eb5c48", 1150, 200),
-        createSvgElement(curved, "#583d91", 1, 1460, 200, 200),
-
-        createSvgElement(curved, "#583d91", 1, 1300, 300, 300),
-        createSvgElement(reactangle, "#fab71a", 1, 1600, 300, 100),
-
-        createCircle(115, "#fab71a", 100, 500),
-        createSvgElement(curved, "#eb5c48", 1, 250, 500, 250),
-        createCircle(135, "#fab71a", 600, 500),
-        createSvgElement(curved, "#eb5c48", 1, 1500, 500, 100),
+        createDot(10, "#583d91", 250, 200),
+        createDot(10, "#eb5c48", 450, 200),
+        createDot(10, "#9a3d90", 500, 200),
+        createDot(10, "#583d91", 700, 200),
+        createDot(10, "#eb5c48", 1150, 200),
+        createDot(10, "#583d91", 1460, 200),
+        createDot(10, "#583d91", 1300, 300),
+        createDot(10, "#fab71a", 1600, 300),
+        createDot(10, "#fab71a", 100, 500),
+        createDot(10, "#eb5c48", 250, 500),
+        createDot(10, "#fab71a", 600, 500),
+        createDot(10, "#eb5c48", 1500, 500),
       ];
 
       // 📕MouseConstraint은 마우스 입력을 기반으로 물리 시뮬레이션에 영향을 주는 제약(Constraint)을 제공한다.
       const mouseConstraint = Matter.MouseConstraint.create(engine, {
         element: container,
         constraint: {
-          stiffness: 0.5, // 제어의 강도 또는 강성(stiffness)을 나타내는 값 (낮을수록 유연)
+          stiffness: 0.5,
           render: {
-            visible: false, // 제어 요소(마우스)의 가시성 여부
+            visible: false,
           },
         },
       });
 
-      // 📕World.add()로 물리 엔진 세계에 다양한 물체들을 추가(배열 안에 설정해놓은 변수들을 펼침연산자로 추가한다.)
+      // 📕World.add()로 물리 엔진 세계에 다양한 물체들을 추가
       World.add(engine.world, [...walls, mouseConstraint, ...elements]);
+
       // 📕Engine.run()로 Matter.js 엔진을 실행
       Engine.run(engine);
 
