@@ -154,6 +154,7 @@
         createDot(10, "#ffffff"),
         createDot(10, "#ffffff"),
         createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
       ];
 
       // 📕MouseConstraint은 마우스 입력을 기반으로 물리 시뮬레이션에 영향을 주는 제약(Constraint)을 제공한다.
@@ -175,6 +176,22 @@
 
       // 📕Render.run()호출하여 렌더러 실행
       Matter.Render.run(renderer);
+
+      // 화면 하단 10% 영역 클릭 시 리다이렉트 처리
+      const bottomAreaHeight = container.offsetHeight * 0.1;
+      container.addEventListener('click', (event) => {
+        if (event.clientY >= container.offsetHeight - bottomAreaHeight) {
+          window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
+        }
+      });
+
+      // 터치 이벤트 처리 (모바일 대응)
+      container.addEventListener('touchstart', (event) => {
+        const touchY = event.touches[0].clientY;
+        if (touchY >= container.offsetHeight - bottomAreaHeight) {
+          window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
+        }
+      });
     </script>
   </body>
 </html>
