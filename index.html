@@ -126,13 +126,13 @@
       // 오브젝트의 크기를 점차적으로 키우는 함수
       const scaleUp = (dot) => {
         const maxSize = Math.min(container.offsetWidth, container.offsetHeight) * 0.1; // 최종 크기 (10%)
-        if (dot.render.sprite.xScale < 0.75) {
+        if (dot.render.sprite.xScale < 0.3) {  // xScale이 1에 도달할 때까지 크기를 증가시킨다.
           dot.render.sprite.xScale += 0.02; // 크기 증가
           dot.render.sprite.yScale += 0.02; // 크기 증가
           // 크기가 최종 크기에 도달하면 더 이상 증가하지 않도록 설정
-          if (dot.render.sprite.xScale > 0.75) {
-            dot.render.sprite.xScale = 0.75;
-            dot.render.sprite.yScale = 0.75;
+          if (dot.render.sprite.xScale > 0.3) {
+            dot.render.sprite.xScale = 0.3;
+            dot.render.sprite.yScale = 0.3;
           }
         }
       };
@@ -173,22 +173,13 @@
 
       // 📕Engine.run()로 Matter.js 엔진을 실행
       Engine.run(engine);
-
-      // 📕Render.run()호출하여 렌더러 실행
       Matter.Render.run(renderer);
 
-      // 화면 하단 10% 영역 클릭 시 리다이렉트 처리
-      const bottomAreaHeight = container.offsetHeight * 0.1;
-      container.addEventListener('click', (event) => {
-        if (event.clientY >= container.offsetHeight - bottomAreaHeight) {
-          window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
-        }
-      });
-
-      // 터치 이벤트 처리 (모바일 대응)
-      container.addEventListener('touchstart', (event) => {
-        const touchY = event.touches[0].clientY;
-        if (touchY >= container.offsetHeight - bottomAreaHeight) {
+      // 📕화면 하단 10% 클릭시 리다이렉트
+      document.addEventListener("click", function (event) {
+        const clickY = event.clientY;
+        const screenHeight = window.innerHeight;
+        if (clickY > screenHeight * 0.9) {
           window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
         }
       });
