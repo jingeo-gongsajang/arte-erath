@@ -176,7 +176,14 @@
 
       // 📕Render.run()호출하여 렌더러 실행
       Matter.Render.run(renderer);
-      
+
+      // 하단 10% 영역을 클릭하거나 터치하면 URL로 이동하는 코드
+      container.addEventListener('click', (event) => {
+        const heightThreshold = container.offsetHeight * 0.9; // 하단 10%
+        if (event.clientY > heightThreshold) {
+          window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
+        }
+      });
     </script>
   </body>
 </html>
