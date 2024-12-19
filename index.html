@@ -90,43 +90,70 @@
         trashImages.push(`trash_images/쓰레기${i}.png`);
       }
 
-      // 점 형태로 변환된 작은 원 생성
-      const createDot = (sizePercentage, color, x, y) => {
-        const size = Math.min(container.offsetWidth, container.offsetHeight) * (sizePercentage / 100);
-        const dot = Bodies.circle(x, y, size, {
-          ...physics,
-          render: {
-            fillStyle: color,
-            sprite: {
-              texture: getRandomTrashImage(),
-              xScale: size / 100, // 이미지 크기 조정 (적절한 크기로 맞추기 위해 조정)
-              yScale: size / 100, // 이미지 크기 조정 (적절한 크기로 맞추기 위해 조정)
-            },
-          },
-        });
-        return dot;
-      };
-
       // 랜덤한 이미지 URL을 선택하는 함수
       const getRandomTrashImage = () => {
         const randomIndex = Math.floor(Math.random() * trashImages.length);
         return trashImages[randomIndex];
       };
 
+      // 랜덤한 위치를 반환하는 함수
+      const randomPosition = (size) => {
+        const x = Math.random() * (container.offsetWidth - size);
+        const y = Math.random() * (container.offsetHeight - size);
+        return { x, y };
+      };
+
+      // 점 형태로 변환된 작은 원 생성
+      const createDot = (sizePercentage, color) => {
+        const size = Math.min(container.offsetWidth, container.offsetHeight) * (sizePercentage / 100);
+        const position = randomPosition(size);
+        const dot = Bodies.circle(position.x, position.y, size, {
+          ...physics,
+          render: {
+            fillStyle: color,
+            sprite: {
+              texture: getRandomTrashImage(),
+              xScale: 0, // 크기가 0에서 시작
+              yScale: 0, // 크기가 0에서 시작
+            },
+          },
+        });
+        // 초기 크기를 0으로 설정하고, 점차적으로 크기가 커지도록 애니메이션 적용
+        Matter.Events.on(engine, "beforeUpdate", () => scaleUp(dot));
+        return dot;
+      };
+
+      // 오브젝트의 크기를 점차적으로 키우는 함수
+      const scaleUp = (dot) => {
+        const maxSize = Math.min(container.offsetWidth, container.offsetHeight) * 0.1; // 최종 크기 (10%)
+        if (dot.render.sprite.xScale < 0.75) {
+          dot.render.sprite.xScale += 0.02; // 크기 증가
+          dot.render.sprite.yScale += 0.02; // 크기 증가
+          // 크기가 최종 크기에 도달하면 더 이상 증가하지 않도록 설정
+          if (dot.render.sprite.xScale > 0.75) {
+            dot.render.sprite.xScale = 0.75;
+            dot.render.sprite.yScale = 0.75;
+          }
+        }
+      };
+
       // 물리적 요소들 (점들) 생성
       const elements = [
-        createDot(10, "#583d91", 250, 200),
-        createDot(10, "#eb5c48", 450, 200),
-        createDot(10, "#9a3d90", 500, 200),
-        createDot(10, "#583d91", 700, 200),
-        createDot(10, "#eb5c48", 1150, 200),
-        createDot(10, "#583d91", 1460, 200),
-        createDot(10, "#583d91", 1300, 300),
-        createDot(10, "#fab71a", 1600, 300),
-        createDot(10, "#fab71a", 100, 500),
-        createDot(10, "#eb5c48", 250, 500),
-        createDot(10, "#fab71a", 600, 500),
-        createDot(10, "#eb5c48", 1500, 500),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
+        createDot(10, "#ffffff"),
       ];
 
       // 📕MouseConstraint은 마우스 입력을 기반으로 물리 시뮬레이션에 영향을 주는 제약(Constraint)을 제공한다.
