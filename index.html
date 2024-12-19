@@ -186,7 +186,6 @@
       });
 
       // 터치 이벤트 처리 (모바일 대응)
-      const bottomAreaHeight = container.offsetHeight * 0.1;
       container.addEventListener('touchstart', (event) => {
         const touchY = event.touches[0].clientY;
         if (touchY >= container.offsetHeight - bottomAreaHeight) {
