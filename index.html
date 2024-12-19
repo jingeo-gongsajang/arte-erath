@@ -177,11 +177,23 @@
       // 📕Render.run()호출하여 렌더러 실행
       Matter.Render.run(renderer);
 
-      // 하단 10% 영역을 클릭하거나 터치하면 URL로 이동하는 코드
+      // 하단 10% 영역 클릭 또는 터치 시 이동
+      const navigateToURL = () => {
+        window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
+      };
+
       container.addEventListener('click', (event) => {
         const heightThreshold = container.offsetHeight * 0.9; // 하단 10%
         if (event.clientY > heightThreshold) {
-          window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
+          navigateToURL();
+        }
+      });
+
+      container.addEventListener('touchstart', (event) => {
+        const heightThreshold = container.offsetHeight * 0.9; // 하단 10%
+        const touchY = event.touches[0].clientY; // 터치 Y 좌표
+        if (touchY > heightThreshold) {
+          navigateToURL();
         }
       });
     </script>
