@@ -185,25 +185,7 @@
       // 📕Render.run()호출하여 렌더러 실행
       Matter.Render.run(renderer);
 
-      // 화면 정중앙에 클릭/터치 가능한 파란 점 생성
-      const dotSize = Math.min(container.offsetWidth, container.offsetHeight) * 0.08; // 크기 (10% 화면 크기)
-      const centerDot = document.createElement('div');
-      centerDot.classList.add('clickable-dot');
-      centerDot.style.width = `${dotSize}px`;
-      centerDot.style.height = `${dotSize}px`;
-      centerDot.style.top = '50%';
-      centerDot.style.left = '50%';
-      centerDot.style.transform = 'translate(-50%, 500%)'; // 중앙에 위치시키기 위한 변환
-
-      // 클릭 또는 터치 시 지정된 URL로 이동
-      const navigateToURL = () => {
-        window.location.href = "https://jingeo-gongsajang.github.io/arte-ocean/";
-      };
-
-      centerDot.addEventListener('click', navigateToURL);
-      centerDot.addEventListener('touchstart', navigateToURL);
-
-      container.appendChild(centerDot);
+      
     </script>
   </body>
 </html>
