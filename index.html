@@ -185,7 +185,38 @@
       // 📕Render.run()호출하여 렌더러 실행
       Matter.Render.run(renderer);
 
+      // 화면 정중앙에 클릭/터치 가능한 파란 점 생성
+      const dotSize = Math.min(container.offsetWidth, container.offsetHeight) * 0.1; // 크기 (8% 화면 크기)
+      const centerDot = document.createElement('div');
+      centerDot.classList.add('clickable-dot');
+      centerDot.style.width = `${dotSize}px`;
+      centerDot.style.height = `${dotSize}px`;
+      centerDot.style.top = '50%';
+      centerDot.style.left = '50%';
+      centerDot.style.transform = 'translate(-50%, 350%)'; // 중앙에 위치시키기 위한 변환
       
+      // 원형으로 만들기 위해 border-radius 적용
+      centerDot.style.borderRadius = '50%';
+
+      // 배경색을 투명하게 설정
+    centerDot.style.backgroundColor = 'transparent'; // 배경색을 투명하게 설정
+      
+      // trash_images/버튼.png 이미지를 배경으로 설정
+      centerDot.style.backgroundImage = 'url("trash_images/버튼.png")';
+      centerDot.style.backgroundSize = 'contain'; // 이미지를 비율을 유지하면서 크기를 맞춤
+      centerDot.style.backgroundPosition = 'center'; // 이미지의 위치를 가운데로 설정
+      centerDot.style.backgroundRepeat = 'no-repeat'; // 이미지가 반복되지 않도록 설정
+      
+      // 클릭 또는 터치 시 지정된 URL로 이동
+      const navigateToURL = () => {
+        window.location.href = "https://jingeo-gongsajang.github.io/arte-simhe/";
+      };
+      
+      centerDot.addEventListener('click', navigateToURL);
+      centerDot.addEventListener('touchstart', navigateToURL);
+
+      container.appendChild(centerDot);
+
     </script>
   </body>
 </html>
